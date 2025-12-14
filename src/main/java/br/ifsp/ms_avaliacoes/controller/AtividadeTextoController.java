@@ -9,32 +9,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/atividades-texto")
 public class AtividadeTextoController {
-
+    private static final Logger log = LoggerFactory.getLogger(AtividadeTextoController.class);
     @Autowired
     private AtividadeTextoService service;
 
-    // 1. CREATE (POST) - Recebe RequestDto, Retorna ResponseDto
     @PostMapping
     public ResponseEntity<AtividadeTextoResponseDto> create(@RequestBody @Valid AtividadeTextoRequestDto dto) {
+        log.info(">>>> MS AVALIAÇÕES: Recebida requisição POST para criar Atividade Texto. Título: {}",
+                dto.getTitulo());
+
+        AtividadeTextoResponseDto response = service.criar(dto);
+
+        log.info("<<<< MS AVALIAÇÕES: Atividade Texto criada com sucesso. ID: {}", response.getId());
         return ResponseEntity.status(201).body(service.criar(dto));
     }
 
-    // 2. READ (GET) - Busca por ID
     @GetMapping("/{id}")
     public ResponseEntity<AtividadeTextoResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    // 3. UPDATE (PUT/PATCH) - Recebe UpdateDto
     @PutMapping("/{id}")
-    public ResponseEntity<AtividadeTextoResponseDto> update(@PathVariable Long id, @RequestBody AtividadeTextoUpdateDto dto) {
+    public ResponseEntity<AtividadeTextoResponseDto> update(@PathVariable Long id,
+            @RequestBody AtividadeTextoUpdateDto dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
-    // 4. DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.deletarAtividade(id);
